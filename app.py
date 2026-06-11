@@ -33,6 +33,7 @@ from blog_generator import (
 # ---------------------------------------------------------------------------
 
 _LOGO_PATH = Path(__file__).parent / "assets" / "logo_small.png"
+_page_icon = Image.open(_LOGO_PATH) if _LOGO_PATH.exists() else "⚡"
 _LOGO_B64 = ""
 if _LOGO_PATH.exists():
     _LOGO_B64 = base64.b64encode(_LOGO_PATH.read_bytes()).decode()
@@ -44,7 +45,7 @@ _LOGO_SRC = f"data:image/png;base64,{_LOGO_B64}" if _LOGO_B64 else ""
 
 st.set_page_config(
     page_title="EPORTH · Blog Generator",
-    page_icon="⚡",
+    page_icon=_page_icon,
     layout="wide",
 )
 
@@ -117,6 +118,7 @@ html, body, .stApp { background: var(--bg) !important; font-family: var(--font-u
 [data-testid="stMainBlockContainer"] {
     padding: 0 32px 96px !important;
     max-width: 820px !important;
+    margin: 0 auto !important;
 }
 
 /* ── ARTICLE TYPOGRAPHY ── */
@@ -242,41 +244,6 @@ html, body, .stApp { background: var(--bg) !important; font-family: var(--font-u
     margin-bottom: 3px !important;
     letter-spacing: 0 !important;
     text-transform: none !important;
-}
-[data-testid="stSelectbox"] > div,
-[data-testid="stSelectbox"] > div > div,
-[data-testid="stSelectbox"] [data-baseweb="select"] {
-    width: 100% !important;
-    min-width: 0 !important;
-}
-[data-testid="stSelectbox"] > div > div {
-    background: var(--bg) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: var(--radius) !important;
-    color: var(--text) !important;
-    font-family: var(--font-ui) !important;
-    font-size: 14px !important;
-    padding: 0 !important;
-}
-[data-testid="stSelectbox"] [data-baseweb="select"] > div {
-    display: flex !important;
-    align-items: center !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    padding: 6px 12px !important;
-}
-[data-testid="stSelectbox"] [data-baseweb="select"] > div > div:first-child {
-    flex: 1 1 0% !important;
-    min-width: 0 !important;
-    overflow: hidden !important;
-}
-[data-testid="stSelectbox"] [data-baseweb="select"] > div > div:first-child > div,
-[data-testid="stSelectbox"] [data-baseweb="select"] > div > div:first-child span {
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    max-width: 100% !important;
-    display: block !important;
 }
 [data-testid="stSelectbox"] label {
     font-family: var(--font-ui) !important;
@@ -507,8 +474,8 @@ img { border-radius: var(--radius) !important; }
 
 /* ── EMPTY STATE ── */
 .empty {
-    margin-top: 9vh;
-    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px;
+    min-height: calc(100vh - 80px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px;
     font-family: var(--font-ui);
 }
 .empty-mark {
@@ -1015,6 +982,7 @@ with tab_imgs:
                                     st.session_state.article["body_html"].replace(old_src, new_img["src"])
                                 )
                             st.session_state.pop("e_body", None)
+                            st.toast(f"Imagem {'da capa' if idx == 0 else idx} atualizada!", icon="✅")
                             st.rerun()
                         else:
                             st.warning("Nenhuma alternativa encontrada.")
