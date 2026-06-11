@@ -360,7 +360,7 @@ def post_to_shopify(article_data: dict, published: bool = False) -> dict:
     access_token = os.environ["SHOPIFY_ACCESS_TOKEN"]
     blog_id = os.environ["SHOPIFY_BLOG_ID"]
 
-    url = f"https://{store_url}/admin/api/2024-01/blogs/{blog_id}/articles.json"
+    url = f"https://{store_url}/admin/api/2025-01/blogs/{blog_id}/articles.json"
     headers = {
         "X-Shopify-Access-Token": access_token,
         "Content-Type": "application/json",
@@ -371,7 +371,7 @@ def post_to_shopify(article_data: dict, published: bool = False) -> dict:
             "author": "EPORTH",
             "tags": article_data.get("tags", ""),
             "body_html": article_data["body_html"],
-            "summary_html": article_data.get("summary_html", ""),
+            "excerpt": article_data.get("summary_html", ""),
             "published": published,
             "metafields": [
                 {
@@ -395,7 +395,12 @@ def post_to_shopify(article_data: dict, published: bool = False) -> dict:
         }
 
     resp = requests.post(url, headers=headers, json=payload)
-    resp.raise_for_status()
+    if not resp.ok:
+        try:
+            detail = resp.json()
+        except Exception:
+            detail = resp.text[:500]
+        raise Exception(f"Shopify {resp.status_code}: {detail}")
     return resp.json()["article"]
 
 
