@@ -300,7 +300,9 @@ Em image_keywords: coloque 3 termos em inglês fotográficos e específicos do c
 - Seja descritivo do cenário exato: "portable power station camping night", "solar panel rooftop installation", "family home blackout emergency"
 - Inclua o produto ou contexto visual esperado na foto — não termos abstratos como "energy" ou "technology"
 - Ao menos 1 keyword deve incluir o produto principal do artigo (ex: "ecoflow portable battery", "power station outdoor")
-- Pense em como um fotógrafo descreveria a cena — quem aparece, onde, o que está acontecendo"""
+- Pense em como um fotógrafo descreveria a cena — quem aparece, onde, o que está acontecendo
+- EPORTH é uma empresa BRASILEIRA: sempre que o tema envolver pessoas, torcidas, eventos, festas, clima ou cotidiano, adicione "brazil" ou "brazilian" na keyword — ex: "brazilian soccer fans stadium", "brazil family home power outage", "brazilian camping outdoor adventure", "brazil summer heat portable fan"
+- Para temas neutros (produto técnico sem contexto cultural) o qualificador geográfico não é necessário"""
 
 
 def generate_blog_with_claude(
