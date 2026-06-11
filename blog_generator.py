@@ -255,14 +255,27 @@ def insert_images_into_html(body_html: str, images: list[dict]) -> str:
         result = result[:insert_pos] + "\n" + _make_img_tag(body_imgs[0]) + "\n" + result[insert_pos:]
 
     if len(body_imgs) >= 2:
-        # Second body image: after first </p> following second <h2>
+        # Second body image: after first </p> following second <h2>/<h3>
         first_h2 = result.find("<h2>")
         second_h2 = result.find("<h2>", first_h2 + 4) if first_h2 != -1 else -1
+        # Fallback to h3 if no second h2
+        if second_h2 == -1:
+            first_h3 = result.find("<h3>")
+            second_h3 = result.find("<h3>", first_h3 + 4) if first_h3 != -1 else result.find("<h3>")
+            second_h2 = second_h3
+        insert_pos = -1
         if second_h2 != -1:
             p1 = result.find("</p>", second_h2)
             if p1 != -1:
                 insert_pos = p1 + 4
-                result = result[:insert_pos] + "\n" + _make_img_tag(body_imgs[1]) + "\n" + result[insert_pos:]
+        if insert_pos == -1:
+            # Fallback: insert at ~2/3 of the document by paragraph count
+            all_p_ends = [i + 4 for i in range(len(result) - 3) if result[i:i+4] == "</p>"]
+            if len(all_p_ends) >= 3:
+                insert_pos = all_p_ends[len(all_p_ends) * 2 // 3]
+            else:
+                insert_pos = len(result)
+        result = result[:insert_pos] + "\n" + _make_img_tag(body_imgs[1]) + "\n" + result[insert_pos:]
 
     return result
 
