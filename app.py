@@ -553,6 +553,9 @@ for key, val in [("article", None), ("published_url", None)]:
     if key not in st.session_state:
         st.session_state[key] = val
 
+if "_pending_toast" in st.session_state:
+    st.toast(st.session_state.pop("_pending_toast"), icon="✅")
+
 missing = [v for v in ["GOOGLE_API_KEY", "SHOPIFY_STORE_URL", "SHOPIFY_ACCESS_TOKEN", "SHOPIFY_BLOG_ID"]
            if not os.environ.get(v)]
 if missing:
@@ -983,7 +986,7 @@ with tab_imgs:
                                     st.session_state.article["body_html"].replace(old_src, new_img["src"])
                                 )
                             st.session_state.pop("e_body", None)
-                            st.toast(f"Imagem {'da capa' if idx == 0 else idx} atualizada!", icon="✅")
+                            st.session_state["_pending_toast"] = f"Imagem {'da capa' if idx == 0 else idx} atualizada!"
                             st.rerun()
                         else:
                             st.warning("Nenhuma alternativa encontrada.")
