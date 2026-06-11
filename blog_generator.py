@@ -16,6 +16,7 @@ import base64
 import json
 import os
 import random
+import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -406,6 +407,16 @@ def post_to_shopify(article_data: dict, published: bool = False) -> dict:
             "filename": "cover.jpg",
             "alt": first.get("alt", ""),
         }
+
+    # Strip <figure> blocks that contain data URI images — they exceed Shopify's 1 MB body_html limit.
+    # This happens when the user manually uploads an image for a body slot.
+    body_html = payload["article"]["body_html"]
+    payload["article"]["body_html"] = re.sub(
+        r'<figure[^>]*>(?:(?!</figure>).)*?<img[^>]+src="data:[^"]*"[^>]*>(?:(?!</figure>).)*?</figure>',
+        '',
+        body_html,
+        flags=re.DOTALL,
+    )
 
     resp = requests.post(url, headers=headers, json=payload)
     if not resp.ok:
