@@ -408,15 +408,17 @@ def post_to_shopify(article_data: dict, published: bool = False) -> dict:
             "alt": first.get("alt", ""),
         }
 
-    # Strip <figure> blocks that contain data URI images — they exceed Shopify's 1 MB body_html limit.
-    # This happens when the user manually uploads an image for a body slot.
+    # Safety net: if body_html exceeds 950 KB, strip any remaining data URI figures.
+    # Under normal flow, body images are compressed at upload time and won't hit this.
     body_html = payload["article"]["body_html"]
-    payload["article"]["body_html"] = re.sub(
-        r'<figure[^>]*>(?:(?!</figure>).)*?<img[^>]+src="data:[^"]*"[^>]*>(?:(?!</figure>).)*?</figure>',
-        '',
-        body_html,
-        flags=re.DOTALL,
-    )
+    if len(body_html.encode("utf-8")) > 950_000:
+        body_html = re.sub(
+            r'<figure[^>]*>(?:(?!</figure>).)*?<img[^>]+src="data:[^"]*"[^>]*>(?:(?!</figure>).)*?</figure>',
+            '',
+            body_html,
+            flags=re.DOTALL,
+        )
+        payload["article"]["body_html"] = body_html
 
     resp = requests.post(url, headers=headers, json=payload)
     if not resp.ok:

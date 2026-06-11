@@ -596,6 +596,21 @@ def _bytes_to_data_uri(raw: bytes, mime: str = "jpeg") -> str:
     return f"data:image/{mime};base64,{base64.b64encode(raw).decode()}"
 
 
+def _compress_for_body(img_bytes: bytes) -> bytes:
+    """Resize + compress body image so its data URI stays well under Shopify's 1 MB body_html limit."""
+    try:
+        img = Image.open(BytesIO(img_bytes)).convert("RGB")
+        w, h = img.size
+        if w > 1200:
+            img = img.resize((1200, int(h * 1200 / w)), Image.LANCZOS)
+        out = BytesIO()
+        img.save(out, format="JPEG", quality=72, optimize=True)
+        compressed = out.getvalue()
+        return compressed if len(compressed) < len(img_bytes) else img_bytes
+    except Exception:
+        return img_bytes
+
+
 def _apply_cover_overlay(img_bytes: bytes) -> bytes:
     """Composite EPORTH logo + black-to-transparent gradient onto cover image."""
     if not img_bytes or not _LOGO_PATH.exists():
@@ -882,16 +897,15 @@ with tab_imgs:
     def _apply_upload(idx: int, uploaded_file) -> None:
         """Replace image slot with uploaded file."""
         raw = uploaded_file.read()
-        ext = uploaded_file.name.rsplit(".", 1)[-1].lower()
-        mime = {"jpg": "jpeg", "jpeg": "jpeg", "png": "png", "webp": "webp"}.get(ext, "jpeg")
-        b64 = base64.b64encode(raw).decode()
-        data_uri = f"data:image/{mime};base64,{b64}"
 
         old_src = st.session_state.article["_images"][idx].get("src", "")
-        # Apply cover overlay for idx=0
         if idx == 0:
             raw = _apply_cover_overlay(raw)
-            data_uri = _bytes_to_data_uri(raw)
+        else:
+            # Compress body images — Shopify limits body_html to 1 MB
+            raw = _compress_for_body(raw)
+        data_uri = _bytes_to_data_uri(raw)
+
         st.session_state.article["_images"][idx].update({
             "src": data_uri,
             "_bytes": raw,
