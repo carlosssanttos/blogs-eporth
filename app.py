@@ -353,6 +353,7 @@ hr {
     color: var(--text-3) !important;
 }
 img { border-radius: var(--radius) !important; }
+[data-testid="stSidebar"] img { border-radius: 0 !important; }
 
 /* ── IMAGE CARDS ── */
 .img-card {
