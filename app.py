@@ -243,6 +243,10 @@ html, body, .stApp { background: var(--bg) !important; font-family: var(--font-u
     letter-spacing: 0 !important;
     text-transform: none !important;
 }
+[data-testid="stSelectbox"] > div,
+[data-testid="stSelectbox"] > div > div {
+    width: 100% !important;
+}
 [data-testid="stSelectbox"] > div > div {
     background: var(--bg) !important;
     border: 1px solid var(--border) !important;
@@ -251,6 +255,16 @@ html, body, .stApp { background: var(--bg) !important; font-family: var(--font-u
     font-family: var(--font-ui) !important;
     font-size: 14px !important;
     padding: 6px 12px !important;
+}
+[data-testid="stSelectbox"] [data-baseweb="select"] > div {
+    width: 100% !important;
+    overflow: hidden !important;
+}
+[data-testid="stSelectbox"] [data-baseweb="select"] span {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    display: block !important;
 }
 [data-testid="stSelectbox"] label {
     font-family: var(--font-ui) !important;
