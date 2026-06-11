@@ -244,8 +244,10 @@ html, body, .stApp { background: var(--bg) !important; font-family: var(--font-u
     text-transform: none !important;
 }
 [data-testid="stSelectbox"] > div,
-[data-testid="stSelectbox"] > div > div {
+[data-testid="stSelectbox"] > div > div,
+[data-testid="stSelectbox"] [data-baseweb="select"] {
     width: 100% !important;
+    min-width: 0 !important;
 }
 [data-testid="stSelectbox"] > div > div {
     background: var(--bg) !important;
@@ -254,16 +256,26 @@ html, body, .stApp { background: var(--bg) !important; font-family: var(--font-u
     color: var(--text) !important;
     font-family: var(--font-ui) !important;
     font-size: 14px !important;
-    padding: 6px 12px !important;
+    padding: 0 !important;
 }
 [data-testid="stSelectbox"] [data-baseweb="select"] > div {
+    display: flex !important;
+    align-items: center !important;
     width: 100% !important;
+    min-width: 0 !important;
+    padding: 6px 12px !important;
+}
+[data-testid="stSelectbox"] [data-baseweb="select"] > div > div:first-child {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
     overflow: hidden !important;
 }
-[data-testid="stSelectbox"] [data-baseweb="select"] span {
+[data-testid="stSelectbox"] [data-baseweb="select"] > div > div:first-child > div,
+[data-testid="stSelectbox"] [data-baseweb="select"] > div > div:first-child span {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
+    max-width: 100% !important;
     display: block !important;
 }
 [data-testid="stSelectbox"] label {
