@@ -33,7 +33,8 @@ from blog_generator import (
 # ---------------------------------------------------------------------------
 
 _LOGO_PATH = Path(__file__).parent / "assets" / "logo_small.png"
-_page_icon = Image.open(_LOGO_PATH) if _LOGO_PATH.exists() else "⚡"
+_FAVICON_PATH = Path(__file__).parent / "assets" / "favicon.png"
+_page_icon = Image.open(_FAVICON_PATH) if _FAVICON_PATH.exists() else "⚡"
 _LOGO_B64 = ""
 if _LOGO_PATH.exists():
     _LOGO_B64 = base64.b64encode(_LOGO_PATH.read_bytes()).decode()
