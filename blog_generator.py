@@ -339,14 +339,29 @@ def generate_blog_with_claude(
 
     print("Gerando conteúdo com Gemini 2.5 Flash...")
     client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        config=genai_types.GenerateContentConfig(
-            system_instruction=SYSTEM_PROMPT_TEMPLATE.format(brand_context=brand_context),
-            response_mime_type="application/json",
-        ),
-        contents=user_prompt,
+    _config = genai_types.GenerateContentConfig(
+        system_instruction=SYSTEM_PROMPT_TEMPLATE.format(brand_context=brand_context),
+        response_mime_type="application/json",
     )
+    _waits = [0, 5, 15, 30]
+    for _attempt, _wait in enumerate(_waits, start=1):
+        if _wait:
+            import time as _time
+            print(f"Modelo sobrecarregado — tentativa {_attempt}/{len(_waits)}, aguardando {_wait}s...")
+            _time.sleep(_wait)
+        try:
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                config=_config,
+                contents=user_prompt,
+            )
+            break
+        except Exception as _e:
+            _is_503 = "503" in str(_e) or "UNAVAILABLE" in str(_e)
+            if not _is_503 or _attempt == len(_waits):
+                raise
+    else:
+        raise Exception("Gemini indisponível após 4 tentativas. Tente novamente em alguns minutos.")
     # Strip control characters that break JSON parsing (e.g. raw tabs in wiki content)
     import re as _re
     clean_text = _re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', response.text)
